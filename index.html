@@ -372,6 +372,61 @@ h1{
     dn:"Discogs: sendes fra Litauen",
     d:["Den største vinylmarkedsplassen. Mange selgere, filtrer etter land, stand og pris.","Brukte og sjeldne plater fra hele verden, auksjoner og faste priser. Vinylkategorien er allerede valgt.","Nye plater og nyutgivelser. Sjekk at de sender til landet ditt før du kjøper.","Uavhengige artister og plateselskaper, ofte begrensede opplag.","Brukte plater og samlerutgaver fra små selgere.","Mange europeiske butikker og samlere på ett sted.","Litauiske annonser: brukte plater fra privatpersoner.","Brukte plater fra privatpersoner i Litauen.","Litauisk musikkbutikk med vinylavdeling.","Bare selgere som sender fra Litauen, så du slipper lang ventetid på pakker fra utlandet.","Platebutikk i Vilnius. Beskrivelse og kontaktinformasjon på siden.","Bokhandel i Vilnius som står i en oversikt over platebutikker.","Oversikt over platebutikker i Vilnius.","Oversikt over platebutikker i Kaunas.","Oversikt over platebutikker i Klaipėda.","Elektronisk, hiphop og soul. Stort utvalg av nyheter.","Berømt uavhengig butikk i London, indie og alternativ.","Eksperimentell og elektronisk musikk, nye plater.","Britisk butikk: indie, rock, elektronisk.","Butikk i London: elektronisk, disco, house.","Butikk i Berlin for techno og elektronisk musikk.","Tysk butikk: klassisk, jazz, rock og mange andre sjangre.","Tysk butikk for plater med elektronisk musikk.","Butikk i Amsterdam: house, techno, disco.","Amerikansk butikk: hiphop, elektronisk og platespillere.","Legendarisk butikk i California med mange brukte plater.","Butikk i Chicago: soul, jazz, brasiliansk musikk.","Amerikansk vinylklubb og butikk, spesialutgaver.","Japansk kjede: japanske utgaver, jazz, rock.","Japanske utgaver med frakt til utlandet.","Japansk kjede for brukte plater.","Australsk detaljkjede, nye plater."]
   };
+  /* Papildomos šalys. Aprašymai sudaromi iš šablonų (TP) ir šalies pavadinimo (CN), visomis 15 kalbų.
+     Masyvų tvarka sutampa su LG: lt,en,de,pl,lv,et,ru,fr,sv,fi,es,it,nl,da,no */
+  var CN={
+    PL:["Lenkija","Poland","Polen","Polska","Polija","Poola","Польша","Pologne","Polen","Puola","Polonia","Polonia","Polen","Polen","Polen"],
+    LV:["Latvija","Latvia","Lettland","Łotwa","Latvija","Läti","Латвия","Lettonie","Lettland","Latvia","Letonia","Lettonia","Letland","Letland","Latvia"],
+    EE:["Estija","Estonia","Estland","Estonia","Igaunija","Eesti","Эстония","Estonie","Estland","Viro","Estonia","Estonia","Estland","Estland","Estland"],
+    DE:["Vokietija","Germany","Deutschland","Niemcy","Vācija","Saksamaa","Германия","Allemagne","Tyskland","Saksa","Alemania","Germania","Duitsland","Tyskland","Tyskland"],
+    FR:["Prancūzija","France","Frankreich","Francja","Francija","Prantsusmaa","Франция","France","Frankrike","Ranska","Francia","Francia","Frankrijk","Frankrig","Frankrike"],
+    ES:["Ispanija","Spain","Spanien","Hiszpania","Spānija","Hispaania","Испания","Espagne","Spanien","Espanja","España","Spagna","Spanje","Spanien","Spania"],
+    IT:["Italija","Italy","Italien","Włochy","Itālija","Itaalia","Италия","Italie","Italien","Italia","Italia","Italia","Italië","Italien","Italia"],
+    NL:["Nyderlandai","Netherlands","Niederlande","Holandia","Nīderlande","Holland","Нидерланды","Pays-Bas","Nederländerna","Alankomaat","Países Bajos","Paesi Bassi","Nederland","Holland","Nederland"],
+    SE:["Švedija","Sweden","Schweden","Szwecja","Zviedrija","Rootsi","Швеция","Suède","Sverige","Ruotsi","Suecia","Svezia","Zweden","Sverige","Sverige"],
+    FI:["Suomija","Finland","Finnland","Finlandia","Somija","Soome","Финляндия","Finlande","Finland","Suomi","Finlandia","Finlandia","Finland","Finland","Finland"],
+    DK:["Danija","Denmark","Dänemark","Dania","Dānija","Taani","Дания","Danemark","Danmark","Tanska","Dinamarca","Danimarca","Denemarken","Danmark","Danmark"],
+    NO:["Norvegija","Norway","Norwegen","Norwegia","Norvēģija","Norra","Норвегия","Norvège","Norge","Norja","Noruega","Norvegia","Noorwegen","Norge","Norge"]
+  };
+  var TP={
+    cls:["{c}: skelbimai, naudotos plokštelės iš privačių pardavėjų.","{c}: classifieds with used records from private sellers.","{c}: Kleinanzeigen mit gebrauchten Platten von Privatverkäufern.","{c}: ogłoszenia z używanymi płytami od osób prywatnych.","{c}: sludinājumi ar lietotām platēm no privātpersonām.","{c}: kuulutused kasutatud plaatidega eraisikutelt.","{c}: объявления с б/у пластинками от частных продавцов.","{c} : petites annonces de disques d'occasion de particuliers.","{c}: annonser med begagnade skivor från privatpersoner.","{c}: ilmoituksia käytetyistä levyistä yksityisiltä myyjiltä.","{c}: anuncios de discos usados de particulares.","{c}: annunci di dischi usati da privati.","{c}: advertenties met tweedehands platen van particulieren.","{c}: annoncer med brugte plader fra private.","{c}: annonser med brukte plater fra privatpersoner."],
+    vin:["{c}: naudotos plokštelės iš privačių pardavėjų.","{c}: used records from private sellers.","{c}: gebrauchte Platten von Privatverkäufern.","{c}: używane płyty od osób prywatnych.","{c}: lietotas plates no privātpersonām.","{c}: kasutatud plaadid eraisikutelt.","{c}: б/у пластинки от частных продавцов.","{c} : disques d'occasion de particuliers.","{c}: begagnade skivor från privatpersoner.","{c}: käytettyjä levyjä yksityisiltä myyjiltä.","{c}: discos usados de particulares.","{c}: dischi usati da privati.","{c}: tweedehands platen van particulieren.","{c}: brugte plader fra private.","{c}: brukte plater fra privatpersoner."],
+    amz:["{c}: naujos plokštelės ir pakartotiniai leidimai. Prieš pirkdami patikrinkite, ar siunčia į jūsų šalį.","{c}: new records and reissues. Check that they ship to your country before buying.","{c}: neue Platten und Neuauflagen. Vor dem Kauf prüfen, ob in Ihr Land geliefert wird.","{c}: nowe płyty i reedycje. Przed zakupem sprawdź, czy wysyłają do Twojego kraju.","{c}: jaunas plates un atkārtoti izdevumi. Pirms pirkšanas pārbaudiet, vai piegādā uz jūsu valsti.","{c}: uued plaadid ja kordusväljaanded. Enne ostmist kontrollige, kas saadetakse teie riiki.","{c}: новые пластинки и переиздания. Перед покупкой проверьте доставку в вашу страну.","{c} : disques neufs et rééditions. Vérifiez la livraison vers votre pays avant d'acheter.","{c}: nya skivor och nyutgåvor. Kontrollera att de skickar till ditt land innan du köper.","{c}: uusia levyjä ja uudelleenjulkaisuja. Tarkista ennen ostoa, toimitetaanko maahasi.","{c}: discos nuevos y reediciones. Comprueba que envían a tu país antes de comprar.","{c}: dischi nuovi e ristampe. Prima di acquistare controlla che spediscano nel tuo paese.","{c}: nieuwe platen en heruitgaven. Controleer vóór aankoop of ze naar jouw land verzenden.","{c}: nye plader og genudgivelser. Tjek at de sender til dit land, før du køber.","{c}: nye plater og nyutgivelser. Sjekk at de sender til landet ditt før du kjøper."],
+    dis:["Tik pardavėjai, siunčiantys iš šalies: {c}.","Only sellers shipping from {c}.","Nur Verkäufer, die aus {c} versenden.","Tylko sprzedawcy wysyłający z kraju: {c}.","Tikai pārdevēji, kas sūta no valsts: {c}.","Ainult müüjad, kes saadavad riigist: {c}.","Только продавцы, отправляющие из страны: {c}.","Uniquement des vendeurs expédiant depuis : {c}.","Bara säljare som skickar från: {c}.","Vain myyjät, jotka lähettävät maasta: {c}.","Solo vendedores que envían desde: {c}.","Solo venditori che spediscono da: {c}.","Alleen verkopers die verzenden vanuit: {c}.","Kun sælgere, der sender fra: {c}.","Bare selgere som sender fra: {c}."],
+    ret:["{c}: didelė parduotuvė su muzikos ir vinilo skyriumi.","{c}: large retailer with a music and vinyl section.","{c}: großer Händler mit Musik- und Vinylabteilung.","{c}: duży sklep z działem muzyki i winyli.","{c}: liels veikals ar mūzikas un vinila nodaļu.","{c}: suur pood muusika- ja vinüüliosakonnaga.","{c}: крупный магазин с отделом музыки и винила.","{c} : grand magasin avec un rayon musique et vinyles.","{c}: stor butik med musik- och vinylavdelning.","{c}: iso kauppa, jossa on musiikki- ja vinyyliosasto.","{c}: gran tienda con sección de música y vinilos.","{c}: grande negozio con reparto musica e vinili.","{c}: grote winkel met muziek- en vinylafdeling.","{c}: stor butik med musik- og vinylafdeling.","{c}: stor butikk med musikk- og vinylavdeling."]
+  };
+  var NEW=[
+    {n:"Discogs Latvija",c:"LV",cc:"LV",t:"m",tk:"dis",u:"https://www.discogs.com/sell/list?ship_from=Latvia&format=Vinyl",s:"https://www.discogs.com/sell/list?q={q}&format=Vinyl&ship_from=Latvia"},
+    {n:"Discogs Eesti",c:"EE",cc:"EE",t:"m",tk:"dis",u:"https://www.discogs.com/sell/list?ship_from=Estonia&format=Vinyl",s:"https://www.discogs.com/sell/list?q={q}&format=Vinyl&ship_from=Estonia"},
+    {n:"Discogs Polska",c:"PL",cc:"PL",t:"m",tk:"dis",u:"https://www.discogs.com/sell/list?ship_from=Poland&format=Vinyl",s:"https://www.discogs.com/sell/list?q={q}&format=Vinyl&ship_from=Poland"},
+    {n:"Discogs Deutschland",c:"DE",cc:"DE",t:"m",tk:"dis",u:"https://www.discogs.com/sell/list?ship_from=Germany&format=Vinyl",s:"https://www.discogs.com/sell/list?q={q}&format=Vinyl&ship_from=Germany"},
+    {n:"Vinted Latvija",c:"LV",cc:"LV",t:"s",tk:"vin",u:"https://www.vinted.lv/",s:"https://www.vinted.lv/catalog?search_text={q}",v:"vinils"},
+    {n:"Vinted Polska",c:"PL",cc:"PL",t:"s",tk:"vin",u:"https://www.vinted.pl/",s:"https://www.vinted.pl/catalog?search_text={q}",v:"winyl"},
+    {n:"Vinted Deutschland",c:"DE",cc:"DE",t:"s",tk:"vin",u:"https://www.vinted.de/",s:"https://www.vinted.de/catalog?search_text={q}",v:"vinyl"},
+    {n:"Vinted France",c:"FR",cc:"FR",t:"s",tk:"vin",u:"https://www.vinted.fr/",s:"https://www.vinted.fr/catalog?search_text={q}",v:"vinyle"},
+    {n:"Vinted España",c:"ES",cc:"ES",t:"s",tk:"vin",u:"https://www.vinted.es/",s:"https://www.vinted.es/catalog?search_text={q}",v:"vinilo"},
+    {n:"Vinted Italia",c:"IT",cc:"IT",t:"s",tk:"vin",u:"https://www.vinted.it/",s:"https://www.vinted.it/catalog?search_text={q}",v:"vinile"},
+    {n:"Vinted Nederland",c:"NL",cc:"NL",t:"s",tk:"vin",u:"https://www.vinted.nl/",s:"https://www.vinted.nl/catalog?search_text={q}",v:"vinyl"},
+    {n:"OLX.pl",c:"PL",cc:"PL",t:"s",tk:"cls",u:"https://www.olx.pl/",s:"https://www.olx.pl/oferty/q-{s}/",v:"winyl"},
+    {n:"Allegro",c:"PL",cc:"PL",t:"m",tk:"vin",u:"https://allegro.pl/",s:"https://allegro.pl/listing?string={q}",v:"winyl"},
+    {n:"Empik",c:"PL",cc:"PL",t:"p",tk:"ret",u:"https://www.empik.com/",s:"https://www.empik.com/szukaj/produkt?q={q}",v:"winyl"},
+    {n:"Kleinanzeigen",c:"DE",cc:"DE",t:"s",tk:"cls",u:"https://www.kleinanzeigen.de/",s:"https://www.kleinanzeigen.de/s-{s}/k0",v:"vinyl"},
+    {n:"Amazon.de",c:"DE",cc:"DE",t:"p",tk:"amz",u:"https://www.amazon.de/",s:"https://www.amazon.de/s?k={q}",v:"vinyl"},
+    {n:"Leboncoin",c:"FR",cc:"FR",t:"s",tk:"cls",u:"https://www.leboncoin.fr/",s:"https://www.leboncoin.fr/recherche?text={q}",v:"vinyle"},
+    {n:"Fnac",c:"FR",cc:"FR",t:"p",tk:"ret",u:"https://www.fnac.com/",s:"https://www.fnac.com/SearchResult/ResultList.aspx?Search={q}",v:"vinyle"},
+    {n:"Amazon.fr",c:"FR",cc:"FR",t:"p",tk:"amz",u:"https://www.amazon.fr/",s:"https://www.amazon.fr/s?k={q}",v:"vinyle"},
+    {n:"Wallapop",c:"ES",cc:"ES",t:"s",tk:"cls",u:"https://es.wallapop.com/",s:"https://es.wallapop.com/search?keywords={q}",v:"vinilo"},
+    {n:"Amazon.es",c:"ES",cc:"ES",t:"p",tk:"amz",u:"https://www.amazon.es/",s:"https://www.amazon.es/s?k={q}",v:"vinilo"},
+    {n:"Subito",c:"IT",cc:"IT",t:"s",tk:"cls",u:"https://www.subito.it/",s:"https://www.subito.it/annunci-italia/vendita/usato/?q={q}",v:"vinile"},
+    {n:"Amazon.it",c:"IT",cc:"IT",t:"p",tk:"amz",u:"https://www.amazon.it/",s:"https://www.amazon.it/s?k={q}",v:"vinile"},
+    {n:"Marktplaats",c:"NL",cc:"NL",t:"s",tk:"cls",u:"https://www.marktplaats.nl/",s:"https://www.marktplaats.nl/q/{q}/",v:"vinyl"},
+    {n:"Blocket",c:"SE",cc:"SE",t:"s",tk:"cls",u:"https://www.blocket.se/",s:"https://www.blocket.se/annonser/hela_sverige?q={q}",v:"vinyl"},
+    {n:"CDON",c:"SE",cc:"SE",t:"p",tk:"ret",u:"https://cdon.se/",s:"https://cdon.se/search?q={q}",v:"vinyl"},
+    {n:"Tori.fi",c:"FI",cc:"FI",t:"s",tk:"cls",u:"https://www.tori.fi/",s:"https://www.tori.fi/recommerce/forsale/search?q={q}",v:"vinyyli"},
+    {n:"DBA",c:"DK",cc:"DK",t:"s",tk:"cls",u:"https://www.dba.dk/",s:"https://www.dba.dk/soeg/?soeg={q}",v:"vinyl"},
+    {n:"FINN.no",c:"NO",cc:"NO",t:"s",tk:"cls",u:"https://www.finn.no/",s:"https://www.finn.no/recommerce/forsale/search?q={q}",v:"vinyl"}
+  ];
+  NEW.forEach(function(e){e.r="eu";S.push(e);});
   S.forEach(function(s,i){s.i=i;});
 
   var state={q:"Pink Floyd The Wall",vinyl:true,region:"all",type:"all",li:0};
@@ -402,7 +457,10 @@ h1{
   function t(k){return state.li<NATIVE?U[k][state.li]:xr().ui[k];}
   function pick(group,id,arr){return state.li<NATIVE?arr[state.li]:xr()[group][id];}
   function nameOf(s){if(typeof s.n==="string")return s.n;return state.li<NATIVE?s.n[state.li]:xr().dn;}
-  function descOf(s){return state.li<NATIVE?s.d[state.li]:xr().d[s.i];}
+  function descOf(s){
+    if(s.tk)return TP[s.tk][state.li].replace("{c}",CN[s.cc][state.li]);
+    return state.li<NATIVE?s.d[state.li]:xr().d[s.i];
+  }
   function slug(x){
     return x.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
   }
