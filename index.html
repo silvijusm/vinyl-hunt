@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vinyl Hunt</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&family=Roboto+Condensed:wght@700&display=swap">
+<style>
+/* Maketas: kalbų jungiklis, antraštė su besisukančia plokštele, paieškos skydelis, filtrai, kortelės sugrupuotos pagal regioną */
+:root{
+  --bg:#ECEEF1;
+  --surface:#FFFFFF;
+  --ink:#14181F;
+  --ink2:#4B5463;
+  --line:#C9CFD8;
+  --sticker:#F4C430;
+  --stickerInk:#14181F;
+  --disc:#0B0E12;
+  --groove:#232932;
+  --focus:#1D5BD1;
+  --font-d:"Barlow Condensed","Roboto Condensed","Arial Narrow",Arial,sans-serif;
+  --font-b:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-m:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1318;--surface:#171C23;--ink:#EDF0F4;--ink2:#A5AEBB;--line:#2C343F;
+    --disc:#06080B;--groove:#1D232B;--focus:#8DB8FF;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1318;--surface:#171C23;--ink:#EDF0F4;--ink2:#A5AEBB;--line:#2C343F;
+  --disc:#06080B;--groove:#1D232B;--focus:#8DB8FF;color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:400 1rem/1.5 var(--font-b);
+  padding-block:24px 56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.wrap{max-width:68rem;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+.langs{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.langs button{font:500 .8rem var(--font-m);letter-spacing:.05em;padding:6px 10px}
+
+.hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center}
+h1{
+  margin:0;font:700 clamp(2.6rem,11vw,5.2rem)/.92 var(--font-d);
+  text-transform:uppercase;letter-spacing:.01em;text-wrap:balance;
+}
+.lede{margin:12px 0 0;max-width:36rem;color:var(--ink2)}
+.disc{
+  width:clamp(92px,22vw,180px);aspect-ratio:1;border-radius:50%;
+  border:1px solid var(--line);
+  background:
+    conic-gradient(from 0deg,transparent 0 18%,rgba(255,255,255,.12) 24%,transparent 30% 68%,rgba(255,255,255,.12) 74%,transparent 80%),
+    radial-gradient(circle,var(--bg) 0 2.6%,var(--sticker) 3% 17%,transparent 17.4%),
+    repeating-radial-gradient(circle,var(--disc) 0 2px,var(--groove) 2px 3px);
+  animation:spin 16s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.disc{animation:none}}
+
+.panel{
+  background:var(--surface);border:1px solid var(--line);border-radius:2px;
+  padding:16px;display:flex;flex-direction:column;gap:14px;
+}
+.lab{font:500 .72rem var(--font-m);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
+#q{
+  width:100%;font:500 1.25rem var(--font-b);padding:12px 14px;
+  border:2px solid var(--ink);border-radius:2px;background:var(--bg);color:var(--ink);
+}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip,.mini{
+  font:500 .9rem var(--font-b);padding:7px 12px;border:1px solid var(--line);
+  background:transparent;color:var(--ink);border-radius:2px;cursor:pointer;
+}
+.mini{font-size:.82rem;padding:5px 10px}
+.chip:hover,.mini:hover{border-color:var(--ink)}
+.chip[aria-pressed="true"],.mini[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.check{display:inline-flex;gap:8px;align-items:center;font-size:.9rem;color:var(--ink2);cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--ink);flex:none}
+#msg{font-size:.85rem;color:var(--ink2);min-height:1.2em}
+
+.filters{display:flex;flex-direction:column;gap:12px}
+.fgroup{display:flex;flex-direction:column;gap:6px}
+.count{font:500 .8rem var(--font-m);color:var(--ink2)}
+
+.sec{display:flex;flex-direction:column;gap:12px}
+.sec h2{
+  margin:0;font:700 1.7rem/1 var(--font-d);text-transform:uppercase;letter-spacing:.03em;
+  display:flex;gap:10px;align-items:baseline;border-bottom:2px solid var(--ink);padding-bottom:8px;
+}
+.sec h2 span{font:500 .8rem var(--font-m);color:var(--ink2);letter-spacing:.04em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,17rem),1fr));gap:12px}
+.card{
+  min-width:0;display:flex;flex-direction:column;gap:10px;padding:14px;
+  background:var(--surface);border:1px solid var(--line);border-radius:2px;
+}
+.top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.card h3{margin:0;font:600 1.1rem/1.25 var(--font-b);overflow-wrap:anywhere}
+.cc{font:500 .75rem var(--font-m);color:var(--ink2)}
+.tag{
+  align-self:flex-start;font:500 .68rem var(--font-m);text-transform:uppercase;letter-spacing:.07em;
+  background:var(--sticker);color:var(--stickerInk);padding:2px 7px;transform:rotate(-1.5deg);
+}
+.note{margin:0;color:var(--ink2);font-size:.9rem}
+.go{
+  margin-top:auto;display:block;padding:10px 12px;border-radius:2px;
+  background:var(--ink);color:var(--surface);text-decoration:none;font-weight:600;font-size:.92rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.go:hover{background:var(--sticker);color:var(--stickerInk)}
+.empty{padding:24px;border:1px dashed var(--line);color:var(--ink2)}
+.foot{color:var(--ink2);font-size:.85rem;max-width:44rem;margin:0}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <div class="langs" id="langs" role="group" aria-label="Kalba / Language"></div>
+
+  <header class="hero">
+    <div>
+      <h1>Vinyl Hunt</h1>
+      <p class="lede" data-i="lede"></p>
+    </div>
+    <div class="disc" aria-hidden="true"></div>
+  </header>
+
+  <section class="panel" id="panel">
+    <label class="lab" for="q" data-i="qlabel"></label>
+    <input id="q" type="search" autocomplete="off" data-p="ph">
+    <div class="row">
+      <span class="lab" data-i="exl"></span>
+      <button class="mini ex" type="button">Pink Floyd The Wall</button>
+      <button class="mini ex" type="button">Kraftwerk Autobahn</button>
+      <button class="mini ex" type="button">Miles Davis Kind of Blue</button>
+      <button class="mini ex" type="button">Joy Division Unknown Pleasures</button>
+    </div>
+    <div class="row">
+      <label class="check" for="vinyl"><input id="vinyl" type="checkbox" checked><span data-i="vinyl"></span></label>
+      <button class="mini" id="copy" type="button" data-i="copy"></button>
+      <button class="mini" id="clear" type="button" data-i="clear"></button>
+    </div>
+    <div id="msg" role="status" aria-live="polite"></div>
+  </section>
+
+  <section class="filters" id="filters">
+    <div class="fgroup"><span class="lab" data-i="rlab"></span><div class="row" id="regions"></div></div>
+    <div class="fgroup"><span class="lab" data-i="tlab"></span><div class="row" id="types"></div></div>
+    <div class="count" id="count"></div>
+  </section>
+
+  <main id="list" class="wrap" style="gap:32px"></main>
+
+  <p class="foot" data-i="foot"></p>
+</div>
+
+<script>
+(function(){
+  var NATIVE=6; /* pirmos 6 kalbos turi tekstus masyvuose, likusios yra objekte X */
+  var LG=["lt","en","de","pl","lv","et","ru","fr","sv","fi","es","it","nl","da","no"];
+  var LN=["LT","EN","DE","PL","LV","ET","RU","FR","SV","FI","ES","IT","NL","DA","NO"];
+  var LNAME=["Lietuvių","English","Deutsch","Polski","Latviešu","Eesti","Русский","Français","Svenska","Suomi","Español","Italiano","Nederlands","Dansk","Norsk"];
+  var ORDER=["lt","en","ru","pl","de","fr","sv","fi","lv","et","es","it","nl","da","no"];
+
+  /* Sąsajos tekstai: [lt, en, de, pl, lv, et] */
+  var U={
+    lede:["Įrašykite atlikėją ar albumą vieną kartą. Prie kiekvienos parduotuvės bus paruošta paieškos nuoroda: spustelėkite ir pamatysite, kas ir už kiek parduoda.",
+      "Type an artist or album once. Each shop gets a ready search link: tap it and see who sells it and at what price.",
+      "Künstler oder Album nur einmal eingeben. Bei jedem Shop steht ein fertiger Suchlink bereit: antippen und sehen, wer es zu welchem Preis verkauft.",
+      "Wpisz wykonawcę lub album raz. Przy każdym sklepie pojawi się gotowy link do wyszukiwania: kliknij i zobacz, kto sprzedaje i za ile.",
+      "Ievadiet izpildītāju vai albumu vienu reizi. Pie katra veikala būs gatava meklēšanas saite: pieskarieties un redziet, kas pārdod un par cik.",
+      "Sisestage artist või album ühe korra. Iga poe juures on valmis otsingulink: puudutage ja vaadake, kes müüb ja mis hinnaga."],
+    qlabel:["Atlikėjas, albumas ar katalogo numeris","Artist, album or catalogue number","Künstler, Album oder Katalognummer","Wykonawca, album lub numer katalogowy","Izpildītājs, albums vai kataloga numurs","Artist, album või kataloogi number"],
+    ph:["pvz., Pink Floyd The Wall","e.g. Pink Floyd The Wall","z. B. Pink Floyd The Wall","np. Pink Floyd The Wall","piem., Pink Floyd The Wall","nt Pink Floyd The Wall"],
+    exl:["Pavyzdžiai","Examples","Beispiele","Przykłady","Piemēri","Näited"],
+    vinyl:["Pridėti žodį „vinyl“ ten, kur parduodama ne vien muzika","Add the word “vinyl” where shops sell more than music","Wort „vinyl“ ergänzen, wo mehr als Musik verkauft wird","Dodaj słowo „vinyl” tam, gdzie sprzedaje się nie tylko muzykę","Pievienot vārdu „vinyl“ tur, kur pārdod ne tikai mūziku","Lisa sõna „vinyl“ seal, kus müüakse muudki peale muusika"],
+    copy:["Kopijuoti tekstą","Copy text","Text kopieren","Kopiuj tekst","Kopēt tekstu","Kopeeri tekst"],
+    clear:["Išvalyti","Clear","Leeren","Wyczyść","Notīrīt","Tühjenda"],
+    rlab:["Regionas","Region","Region","Region","Reģions","Piirkond"],
+    tlab:["Tipas","Type","Typ","Typ","Veids","Tüüp"],
+    allr:["Visi regionai","All regions","Alle Regionen","Wszystkie regiony","Visi reģioni","Kõik piirkonnad"],
+    count:["Rodoma vietų: {a} iš {b}","Showing {a} of {b} places","{a} von {b} Orten","Pokazano miejsc: {a} z {b}","Rādītas vietas: {a} no {b}","Kuvatud kohti: {a}/{b}"],
+    empty:["Pagal pasirinktus filtrus nieko nerasta. Pasirinkite kitą regioną ar tipą.","Nothing matches these filters. Try another region or type.","Keine Treffer für diese Filter. Wählen Sie eine andere Region oder einen anderen Typ.","Brak wyników dla wybranych filtrów. Wybierz inny region lub typ.","Pēc izvēlētajiem filtriem nekas nav atrasts. Izvēlieties citu reģionu vai veidu.","Valitud filtritega ei leitud midagi. Valige muu piirkond või tüüp."],
+    foot:["Nuorodos sudarytos pagal svetainių paieškos adresus. Jei kuri nors svetainė pakeis adresą, atsidarys jos pradžios puslapis. Prie svetainių be tiesioginės paieškos paiešką suveskite pačioje svetainėje (pasinaudokite mygtuku „Kopijuoti tekstą“).",
+      "Links follow each site’s search address. If a site changes its address, its home page opens instead. For sites without a direct search link, enter the search on the site itself (use the “Copy text” button).",
+      "Die Links folgen den Suchadressen der jeweiligen Websites. Ändert eine Website ihre Adresse, öffnet sich deren Startseite. Bei Websites ohne direkten Suchlink geben Sie die Suche auf der Seite selbst ein (Schaltfläche „Text kopieren“).",
+      "Linki odpowiadają adresom wyszukiwania poszczególnych stron. Jeśli strona zmieni adres, otworzy się jej strona główna. W przypadku stron bez bezpośredniego linku wpisz wyszukiwanie na stronie (przycisk „Kopiuj tekst”).",
+      "Saites veidotas pēc vietņu meklēšanas adresēm. Ja vietne maina adresi, tiks atvērta tās sākumlapa. Vietnēs bez tiešas meklēšanas saites ievadiet meklēšanu pašā vietnē (pogu „Kopēt tekstu“).",
+      "Lingid põhinevad veebilehtede otsinguaadressidel. Kui leht aadressi muudab, avaneb selle esileht. Otselingita lehtedel sisestage otsing lehel endal (nupp „Kopeeri tekst“)."],
+    needq:["Pirmiausia įrašykite paieškos tekstą.","Enter a search text first.","Bitte zuerst einen Suchtext eingeben.","Najpierw wpisz tekst wyszukiwania.","Vispirms ievadiet meklēšanas tekstu.","Sisestage esmalt otsingutekst."],
+    copied:["Nukopijuota: „{q}“","Copied: “{q}”","Kopiert: „{q}“","Skopiowano: „{q}”","Nokopēts: „{q}“","Kopeeritud: „{q}“"],
+    selected:["Tekstas pažymėtas. Nukopijuokite jį rankiniu būdu.","Text selected. Copy it manually.","Text markiert. Bitte manuell kopieren.","Tekst zaznaczony. Skopiuj go ręcznie.","Teksts iezīmēts. Nokopējiet to manuāli.","Tekst on valitud. Kopeerige see käsitsi."],
+    manual:["Paiešką suveskite svetainėje.","Enter your search on the site.","Suche bitte direkt auf der Website eingeben.","Wyszukiwanie wpisz na stronie.","Meklēšanu ievadiet pašā vietnē.","Sisestage otsing veebilehel."],
+    go:["Ieškoti „{q}“ ↗","Search “{q}” ↗","Suchen: „{q}“ ↗","Szukaj: „{q}” ↗","Meklēt: „{q}“ ↗","Otsi: „{q}“ ↗"],
+    open:["Atidaryti svetainę ↗","Open site ↗","Website öffnen ↗","Otwórz stronę ↗","Atvērt vietni ↗","Ava veebileht ↗"],
+    viewd:["Peržiūrėti aprašymą ↗","View description ↗","Beschreibung ansehen ↗","Zobacz opis ↗","Skatīt aprakstu ↗","Vaata kirjeldust ↗"],
+    viewl:["Peržiūrėti sąrašą ↗","View list ↗","Liste ansehen ↗","Zobacz listę ↗","Skatīt sarakstu ↗","Vaata nimekirja ↗"],
+    sTitle:["Paieška","Search","Suche","Wyszukiwanie","Meklēšana","Otsing"],
+    fTitle:["Filtrai","Filters","Filter","Filtry","Filtri","Filtrid"]
+  };
+  var REG=[
+    ["lt",["Lietuva","Lithuania","Litauen","Litwa","Lietuva","Leedu"]],
+    ["ww",["Visas pasaulis","Worldwide","Weltweit","Cały świat","Visa pasaule","Kogu maailm"]],
+    ["eu",["Europa","Europe","Europa","Europa","Eiropa","Euroopa"]],
+    ["na",["JAV","USA","USA","USA","ASV","USA"]],
+    ["as",["Azija ir Okeanija","Asia and Oceania","Asien und Ozeanien","Azja i Oceania","Āzija un Okeānija","Aasia ja Okeaania"]]
+  ];
+  var TYP=[
+    ["all",["Visi tipai","All types","Alle Typen","Wszystkie typy","Visi veidi","Kõik tüübid"]],
+    ["m",["Prekyvietės","Marketplaces","Marktplätze","Platformy sprzedażowe","Tirdzniecības vietas","Turuplatsid"]],
+    ["p",["Parduotuvės","Shops","Shops","Sklepy","Veikali","Poed"]],
+    ["s",["Skelbimai","Classifieds","Kleinanzeigen","Ogłoszenia","Sludinājumi","Kuulutused"]],
+    ["k",["Parduotuvių sąrašai","Shop directories","Shopverzeichnisse","Katalogi sklepów","Veikalu katalogi","Poodide kataloogid"]]
+  ];
+  var TL={
+    m:["Prekyvietė","Marketplace","Marktplatz","Platforma","Tirdzniecības vieta","Turuplats"],
+    p:["Parduotuvė","Shop","Shop","Sklep","Veikals","Pood"],
+    s:["Skelbimai","Classifieds","Kleinanzeigen","Ogłoszenia","Sludinājumi","Kuulutused"],
+    k:["Sąrašas","Directory","Verzeichnis","Katalog","Katalogs","Kataloog"]
+  };
+
+  /* Parduotuvės. d = aprašymai [lt,en,de,pl,lv,et]; m:1 = nėra tiesioginės paieškos; a = mygtuko tipas (d = aprašymas, l = sąrašas) */
+  var S=[
+    {n:"Discogs",c:"WW",r:"ww",t:"m",u:"https://www.discogs.com/",s:"https://www.discogs.com/sell/list?q={q}&format=Vinyl",
+     d:["Didžiausia vinilo prekyvietė. Daug pardavėjų, galima filtruoti pagal šalį, būklę ir kainą.","The largest vinyl marketplace. Many sellers; filter by country, condition and price.","Der größte Vinyl-Marktplatz. Viele Verkäufer, filterbar nach Land, Zustand und Preis.","Największa platforma z winylami. Wielu sprzedawców, filtry kraju, stanu i ceny.","Lielākā vinila tirdzniecības vieta. Daudz pārdevēju, filtri pēc valsts, stāvokļa un cenas.","Suurim vinüüliturg. Palju müüjaid, filtreeri riigi, seisukorra ja hinna järgi."]},
+    {n:"eBay",c:"WW",r:"ww",t:"m",u:"https://www.ebay.com/sch/i.html?_sacat=176985",s:"https://www.ebay.com/sch/i.html?_nkw={q}&_sacat=176985",
+     d:["Naudotos ir retos plokštelės iš viso pasaulio, aukcionai ir fiksuotos kainos. Vinilo kategorija jau parinkta.","Used and rare records from all over the world, auctions and fixed prices. Vinyl category preselected.","Gebrauchte und seltene Platten aus aller Welt, Auktionen und Festpreise. Vinyl-Kategorie ist vorgewählt.","Używane i rzadkie płyty z całego świata, aukcje i stałe ceny. Kategoria winyli jest już wybrana.","Lietotas un retas plates no visas pasaules, izsoles un fiksētas cenas. Vinila kategorija jau izvēlēta.","Kasutatud ja haruldased plaadid üle maailma, oksjonid ja fikseeritud hinnad. Vinüüli kategooria on valitud."]},
+    {n:"Amazon",c:"WW",r:"ww",t:"p",u:"https://www.amazon.com/",s:"https://www.amazon.com/s?k={q}",v:"vinyl",
+     d:["Naujos plokštelės ir pakartotiniai leidimai. Prieš pirkdami patikrinkite, ar siunčia į Lietuvą.","New records and reissues. Check that they ship to your country before buying.","Neue Platten und Neuauflagen. Vor dem Kauf prüfen, ob in Ihr Land geliefert wird.","Nowe płyty i reedycje. Przed zakupem sprawdź, czy wysyłają do Twojego kraju.","Jaunas plates un atkārtoti izdevumi. Pirms pirkšanas pārbaudiet, vai piegādā uz jūsu valsti.","Uued plaadid ja kordusväljaanded. Enne ostmist kontrollige, kas saadetakse teie riiki."]},
+    {n:"Bandcamp",c:"WW",r:"ww",t:"m",u:"https://bandcamp.com/",s:"https://bandcamp.com/search?q={q}",
+     d:["Nepriklausomi atlikėjai ir leidyklos, dažnai ribotų tiražų plokštelės.","Independent artists and labels, often limited-run pressings.","Unabhängige Künstler und Labels, oft limitierte Auflagen.","Niezależni artyści i wytwórnie, często limitowane nakłady.","Neatkarīgi mākslinieki un izdevniecības, bieži ierobežota tirāža.","Sõltumatud artistid ja plaadifirmad, sageli piiratud tiraažid."]},
+    {n:"Etsy",c:"WW",r:"ww",t:"m",u:"https://www.etsy.com/",s:"https://www.etsy.com/search?q={q}",v:"vinyl record",
+     d:["Naudotos plokštelės ir kolekciniai leidimai iš smulkių pardavėjų.","Used records and collectible editions from small sellers.","Gebrauchte Platten und Sammlerausgaben von kleinen Verkäufern.","Używane płyty i wydania kolekcjonerskie od małych sprzedawców.","Lietotas plates un kolekcijas izdevumi no maziem pārdevējiem.","Kasutatud plaadid ja kollektsiooniväljaanded väikemüüjatelt."]},
+    {n:"CD & LP",c:"WW",r:"ww",t:"m",u:"https://www.cdandlp.com/",m:1,
+     d:["Daug Europos parduotuvių ir kolekcininkų vienoje vietoje.","Many European shops and collectors in one place.","Viele europäische Shops und Sammler an einem Ort.","Wielu europejskich sklepów i kolekcjonerów w jednym miejscu.","Daudz Eiropas veikalu un kolekcionāru vienuviet.","Palju Euroopa poode ja kollektsionääre ühes kohas."]},
+
+    {n:"Skelbiu.lt",c:"LT",r:"lt",t:"s",u:"https://www.skelbiu.lt/paieska/vinilai/",s:"https://www.skelbiu.lt/paieska/{s}",v:"vinilas",
+     d:["Lietuviški skelbimai: naudotos plokštelės iš privačių pardavėjų.","Lithuanian classifieds: used records from private sellers.","Litauische Kleinanzeigen: gebrauchte Platten von Privatverkäufern.","Litewskie ogłoszenia: używane płyty od osób prywatnych.","Lietuviešu sludinājumi: lietotas plates no privātpersonām.","Leedu kuulutused: kasutatud plaadid eraisikutelt."]},
+    {n:"Vinted.lt",c:"LT",r:"lt",t:"s",u:"https://www.vinted.lt/",s:"https://www.vinted.lt/catalog?search_text={q}",v:"vinilas",
+     d:["Naudotos plokštelės iš privačių pardavėjų Lietuvoje.","Used records from private sellers in Lithuania.","Gebrauchte Platten von Privatverkäufern in Litauen.","Używane płyty od osób prywatnych na Litwie.","Lietotas plates no privātpersonām Lietuvā.","Kasutatud plaadid eraisikutelt Leedus."]},
+    {n:"Music Lithuania",c:"LT",r:"lt",t:"p",u:"https://musiclithuania.com/collections/vinyl-records",s:"https://musiclithuania.com/search?q={q}",
+     d:["Lietuviškos muzikos parduotuvė su vinilo plokštelių skyriumi.","Lithuanian music shop with a vinyl section.","Litauischer Musikshop mit Vinyl-Abteilung.","Litewski sklep muzyczny z działem winyli.","Lietuviešu mūzikas veikals ar vinila nodaļu.","Leedu muusikapood vinüüliosakonnaga."]},
+    {n:["Discogs: siunčia iš Lietuvos","Discogs: ships from Lithuania","Discogs: Versand aus Litauen","Discogs: wysyłka z Litwy","Discogs: sūta no Lietuvas","Discogs: saadetakse Leedust"],c:"LT",r:"lt",t:"m",u:"https://www.discogs.com/sell/list?ship_from=Lithuania&format=Vinyl",s:"https://www.discogs.com/sell/list?q={q}&format=Vinyl&ship_from=Lithuania",
+     d:["Tik pardavėjai, siunčiantys iš Lietuvos, todėl nereikia laukti siuntos iš užsienio.","Only sellers shipping from Lithuania, so no long wait for parcels from abroad.","Nur Verkäufer, die aus Litauen versenden, also keine lange Wartezeit auf Pakete aus dem Ausland.","Tylko sprzedawcy wysyłający z Litwy, więc bez długiego czekania na paczki z zagranicy.","Tikai pārdevēji, kas sūta no Lietuvas, tāpēc nav jāgaida sūtījumi no ārzemēm.","Ainult Leedust saatvad müüjad, seega pole vaja välismaalt pakke oodata."]},
+    {n:"Vinyloteka, Vilnius",c:"LT",r:"lt",t:"k",u:"https://neakivaizdinisvilnius.lt/en/leisure/vinyl-record-store-vinyloteka/",a:"d",
+     d:["Vilniaus plokštelių parduotuvė. Aprašymas ir kontaktai puslapyje.","A record shop in Vilnius. Description and contacts on the page.","Plattenladen in Vilnius. Beschreibung und Kontakt auf der Seite.","Sklep z płytami w Wilnie. Opis i kontakt na stronie.","Skaņuplašu veikals Viļņā. Apraksts un kontakti lapā.","Plaadipood Vilniuses. Kirjeldus ja kontaktid lehel."]},
+    {n:"Rūdninkų knygynas, Vilnius",c:"LT",r:"lt",t:"k",u:"https://www.jazznearyou.com/vilnius/recordstore/rudninku-knygynas",a:"d",
+     d:["Vilniaus knygynas, įrašytas į plokštelių parduotuvių katalogą.","A Vilnius bookshop listed in a record shop directory.","Buchhandlung in Vilnius, im Plattenladen-Verzeichnis geführt.","Księgarnia w Wilnie wpisana do katalogu sklepów z płytami.","Viļņas grāmatnīca, iekļauta skaņuplašu veikalu katalogā.","Vilniuse raamatupood, mis on plaadipoodide kataloogis."]},
+    {n:"Nivessa: Vilnius",c:"LT",r:"lt",t:"k",u:"https://nivessa.com/record-stores/lithuania/vilnius-county/vilnius",a:"l",
+     d:["Vilniaus plokštelių parduotuvių sąrašas.","List of record shops in Vilnius.","Liste der Plattenläden in Vilnius.","Lista sklepów z płytami w Wilnie.","Skaņuplašu veikalu saraksts Viļņā.","Vilniuse plaadipoodide nimekiri."]},
+    {n:"Nivessa: Kaunas",c:"LT",r:"lt",t:"k",u:"https://nivessa.com/record-stores/lithuania/kaunas-county/kaunas",a:"l",
+     d:["Kauno plokštelių parduotuvių sąrašas.","List of record shops in Kaunas.","Liste der Plattenläden in Kaunas.","Lista sklepów z płytami w Kownie.","Skaņuplašu veikalu saraksts Kauņā.","Kaunase plaadipoodide nimekiri."]},
+    {n:"Nivessa: Klaipėda",c:"LT",r:"lt",t:"k",u:"https://nivessa.com/record-stores/lithuania/klaip%C4%97da-county/klaip%C4%97da",a:"l",
+     d:["Klaipėdos plokštelių parduotuvių sąrašas.","List of record shops in Klaipėda.","Liste der Plattenläden in Klaipėda.","Lista sklepów z płytami w Kłajpedzie.","Skaņuplašu veikalu saraksts Klaipēdā.","Klaipeda plaadipoodide nimekiri."]},
+
+    {n:"Juno Records",c:"GB",r:"eu",t:"p",u:"https://www.juno.co.uk/",s:"https://www.juno.co.uk/search/?q%5Ball%5D%5B%5D={q}",
+     d:["Elektroninė muzika, hip-hopas ir soul. Didelis naujų leidimų pasirinkimas.","Electronic, hip-hop and soul. A big selection of new releases.","Elektronik, Hip-Hop und Soul. Große Auswahl an Neuheiten.","Muzyka elektroniczna, hip-hop i soul. Duży wybór nowości.","Elektroniskā mūzika, hiphops un soul. Liela jaunāko izdevumu izvēle.","Elektrooniline muusika, hip-hop ja soul. Suur valik uusi väljaandeid."]},
+    {n:"Rough Trade",c:"GB",r:"eu",t:"p",u:"https://www.roughtrade.com/",s:"https://www.roughtrade.com/en-gb/search?q={q}",
+     d:["Garsi Londono nepriklausoma parduotuvė, indie ir alternatyva.","A famous independent London shop, indie and alternative.","Berühmter unabhängiger Londoner Laden, Indie und Alternative.","Słynny niezależny sklep z Londynu, indie i alternatywa.","Slavens neatkarīgs Londonas veikals, indī un alternatīva.","Kuulus sõltumatu Londoni pood, indie ja alternatiiv."]},
+    {n:"Boomkat",c:"GB",r:"eu",t:"p",u:"https://boomkat.com/",s:"https://boomkat.com/products?q%5Bkeywords%5D={q}",
+     d:["Eksperimentinė ir elektroninė muzika, naujos plokštelės.","Experimental and electronic music, new records.","Experimentelle und elektronische Musik, neue Platten.","Muzyka eksperymentalna i elektroniczna, nowe płyty.","Eksperimentālā un elektroniskā mūzika, jaunas plates.","Eksperimentaalne ja elektrooniline muusika, uued plaadid."]},
+    {n:"Norman Records",c:"GB",r:"eu",t:"p",u:"https://www.normanrecords.com/",m:1,
+     d:["Britų parduotuvė: indie, rokas, elektronika.","British shop: indie, rock, electronic.","Britischer Shop: Indie, Rock, Elektronik.","Brytyjski sklep: indie, rock, elektronika.","Britu veikals: indī, roks, elektronika.","Briti pood: indie, rokk, elektroonika."]},
+    {n:"Phonica Records",c:"GB",r:"eu",t:"p",u:"https://www.phonicarecords.com/",m:1,
+     d:["Londono parduotuvė: elektronika, disko, house.","London shop: electronic, disco, house.","Londoner Laden: Elektronik, Disco, House.","Londyński sklep: elektronika, disco, house.","Londonas veikals: elektronika, disko, house.","Londoni pood: elektroonika, disko, house."]},
+    {n:"Hardwax",c:"DE",r:"eu",t:"p",u:"https://hardwax.com/",s:"https://hardwax.com/?search={q}",
+     d:["Berlyno techno ir elektroninės muzikos parduotuvė.","Berlin shop for techno and electronic music.","Berliner Laden für Techno und elektronische Musik.","Berliński sklep z technem i muzyką elektroniczną.","Berlīnes tehno un elektroniskās mūzikas veikals.","Berliini tehno- ja elektroonilise muusika pood."]},
+    {n:"JPC",c:"DE",r:"eu",t:"p",u:"https://www.jpc.de/",s:"https://www.jpc.de/s/{q}",
+     d:["Vokietijos parduotuvė: klasika, džiazas, rokas ir daug kitų žanrų.","German shop: classical, jazz, rock and many other genres.","Deutscher Shop: Klassik, Jazz, Rock und viele weitere Genres.","Niemiecki sklep: klasyka, jazz, rock i wiele innych gatunków.","Vācijas veikals: klasika, džezs, roks un daudz citu žanru.","Saksa pood: klassika, džäss, rokk ja paljud teised žanrid."]},
+    {n:"Deejay.de",c:"DE",r:"eu",t:"p",u:"https://www.deejay.de/",m:1,
+     d:["Vokietijos elektroninės muzikos plokštelių parduotuvė.","German shop for electronic music records.","Deutscher Shop für elektronische Musik auf Platte.","Niemiecki sklep z płytami z muzyką elektroniczną.","Vācijas elektroniskās mūzikas plašu veikals.","Saksa elektroonilise muusika plaadipood."]},
+    {n:"Rush Hour",c:"NL",r:"eu",t:"p",u:"https://www.rushhour.nl/",m:1,
+     d:["Amsterdamo parduotuvė: house, techno, disko.","Amsterdam shop: house, techno, disco.","Amsterdamer Laden: House, Techno, Disco.","Sklep z Amsterdamu: house, techno, disco.","Amsterdamas veikals: house, tehno, disko.","Amsterdami pood: house, tehno, disko."]},
+
+    {n:"Turntable Lab",c:"US",r:"na",t:"p",u:"https://www.turntablelab.com/",s:"https://www.turntablelab.com/search?q={q}",
+     d:["JAV parduotuvė: hip-hopas, elektronika ir patys grotuvai.","US shop: hip-hop, electronic and turntables themselves.","US-Shop: Hip-Hop, Elektronik und Plattenspieler.","Sklep z USA: hip-hop, elektronika i same gramofony.","ASV veikals: hiphops, elektronika un paši atskaņotāji.","USA pood: hip-hop, elektroonika ja mängijad ise."]},
+    {n:"Amoeba Music",c:"US",r:"na",t:"p",u:"https://www.amoeba.com/",m:1,
+     d:["Kalifornijos legendinė parduotuvė, daug naudotų plokštelių.","Legendary California shop with lots of used records.","Legendärer Laden aus Kalifornien mit vielen gebrauchten Platten.","Legendarny kalifornijski sklep z wieloma używanymi płytami.","Leģendārs Kalifornijas veikals ar daudz lietotu plašu.","Legendaarne California pood, palju kasutatud plaate."]},
+    {n:"Dusty Groove",c:"US",r:"na",t:"p",u:"https://www.dustygroove.com/",m:1,
+     d:["Čikagos parduotuvė: soul, džiazas, brazilų muzika.","Chicago shop: soul, jazz, Brazilian music.","Chicagoer Laden: Soul, Jazz, brasilianische Musik.","Sklep z Chicago: soul, jazz, muzyka brazylijska.","Čikāgas veikals: soul, džezs, Brazīlijas mūzika.","Chicago pood: soul, džäss, Brasiilia muusika."]},
+    {n:"Vinyl Me Please",c:"US",r:"na",t:"p",u:"https://www.vinylmeplease.com/",m:1,
+     d:["JAV vinilo klubas ir parduotuvė, specialūs leidimai.","US vinyl club and shop with special editions.","US-Vinylclub und Shop mit Sonderausgaben.","Amerykański klub winylowy i sklep, wydania specjalne.","ASV vinila klubs un veikals, īpaši izdevumi.","USA vinüüliklubi ja pood, erikordsed väljaanded."]},
+
+    {n:"Tower Records Japan",c:"JP",r:"as",t:"p",u:"https://tower.jp/",s:"https://tower.jp/search/item/{q}",
+     d:["Japonijos tinklas: japoniški leidimai, džiazas, rokas.","Japanese chain: Japanese editions, jazz, rock.","Japanische Kette: japanische Ausgaben, Jazz, Rock.","Japońska sieć: japońskie wydania, jazz, rock.","Japānas tīkls: japāņu izdevumi, džezs, roks.","Jaapani kett: Jaapani väljaanded, džäss, rokk."]},
+    {n:"CDJapan",c:"JP",r:"as",t:"p",u:"https://www.cdjapan.co.jp/",s:"https://www.cdjapan.co.jp/searchuni?q={q}",
+     d:["Japoniški leidimai su siuntimu į užsienį.","Japanese editions shipped abroad.","Japanische Ausgaben mit Versand ins Ausland.","Japońskie wydania z wysyłką za granicę.","Japāņu izdevumi ar piegādi uz ārzemēm.","Jaapani väljaanded saatmisega välismaale."]},
+    {n:"Disk Union",c:"JP",r:"as",t:"p",u:"https://diskunion.net/",m:1,
+     d:["Japonijos naudotų plokštelių tinklas.","Japanese chain of used records.","Japanische Kette für gebrauchte Platten.","Japońska sieć z używanymi płytami.","Japānas lietotu plašu tīkls.","Jaapani kasutatud plaatide kett."]},
+    {n:"JB Hi-Fi",c:"AU",r:"as",t:"p",u:"https://www.jbhifi.com.au/",m:1,
+     d:["Australijos prekybos tinklas, naujos plokštelės.","Australian retail chain, new records.","Australische Handelskette, neue Platten.","Australijska sieć handlowa, nowe płyty.","Austrālijas tirdzniecības tīkls, jaunas plates.","Austraalia jaekett, uued plaadid."]}
+  ];
+
+  /* Papildomos kalbos. d = 32 aprašymai ta pačia tvarka kaip S; dn = Discogs (Lietuva) pavadinimas */
+  var X={};
+  X.ru={
+    ui:{lede:"Введите исполнителя или альбом один раз. У каждого магазина будет готовая ссылка для поиска: нажмите и посмотрите, кто продаёт и по какой цене.",qlabel:"Исполнитель, альбом или каталожный номер",ph:"напр., Pink Floyd The Wall",exl:"Примеры",vinyl:"Добавлять слово «vinyl» там, где продаётся не только музыка",copy:"Копировать текст",clear:"Очистить",rlab:"Регион",tlab:"Тип",count:"Показано мест: {a} из {b}",empty:"По выбранным фильтрам ничего не найдено. Выберите другой регион или тип.",foot:"Ссылки составлены по адресам поиска сайтов. Если сайт изменит адрес, откроется его главная страница. Для сайтов без прямой ссылки на поиск введите запрос на самом сайте (поможет кнопка «Копировать текст»).",needq:"Сначала введите текст для поиска.",copied:"Скопировано: «{q}»",selected:"Текст выделен. Скопируйте его вручную.",manual:"Введите запрос на самом сайте.",go:"Искать «{q}» ↗",open:"Открыть сайт ↗",viewd:"Посмотреть описание ↗",viewl:"Посмотреть список ↗",sTitle:"Поиск",fTitle:"Фильтры"},
+    reg:{all:"Все регионы",lt:"Литва",ww:"Весь мир",eu:"Европа",na:"США",as:"Азия и Океания"},
+    typ:{all:"Все типы",m:"Площадки",p:"Магазины",s:"Объявления",k:"Списки магазинов"},
+    tl:{m:"Площадка",p:"Магазин",s:"Объявления",k:"Список"},
+    dn:"Discogs: отправка из Литвы",
+    d:["Крупнейшая площадка винила. Много продавцов, фильтры по стране, состоянию и цене.","Б/у и редкие пластинки со всего мира, аукционы и фиксированные цены. Категория винила уже выбрана.","Новые пластинки и переиздания. Перед покупкой проверьте, есть ли доставка в вашу страну.","Независимые исполнители и лейблы, часто лимитированные тиражи.","Б/у пластинки и коллекционные издания от небольших продавцов.","Много европейских магазинов и коллекционеров в одном месте.","Литовские объявления: б/у пластинки от частных продавцов.","Б/у пластинки от частных продавцов в Литве.","Литовский музыкальный магазин с отделом винила.","Только продавцы, отправляющие из Литвы, поэтому не нужно долго ждать посылку из-за границы.","Магазин пластинок в Вильнюсе. Описание и контакты на странице.","Книжный магазин в Вильнюсе, внесённый в каталог магазинов пластинок.","Список магазинов пластинок в Вильнюсе.","Список магазинов пластинок в Каунасе.","Список магазинов пластинок в Клайпеде.","Электронная музыка, хип-хоп и соул. Большой выбор новинок.","Известный независимый лондонский магазин, инди и альтернатива.","Экспериментальная и электронная музыка, новые пластинки.","Британский магазин: инди, рок, электроника.","Лондонский магазин: электроника, диско, хаус.","Берлинский магазин техно и электронной музыки.","Немецкий магазин: классика, джаз, рок и многое другое.","Немецкий магазин пластинок с электронной музыкой.","Амстердамский магазин: хаус, техно, диско.","Магазин из США: хип-хоп, электроника и сами проигрыватели.","Легендарный калифорнийский магазин, много б/у пластинок.","Магазин из Чикаго: соул, джаз, бразильская музыка.","Американский винил-клуб и магазин, специальные издания.","Японская сеть: японские издания, джаз, рок.","Японские издания с доставкой за границу.","Японская сеть б/у пластинок.","Австралийская торговая сеть, новые пластинки."]
+  };
+  X.fr={
+    ui:{lede:"Saisissez un artiste ou un album une seule fois. Chaque magasin dispose d'un lien de recherche prêt : touchez-le pour voir qui vend et à quel prix.",qlabel:"Artiste, album ou numéro de catalogue",ph:"p. ex. Pink Floyd The Wall",exl:"Exemples",vinyl:"Ajouter le mot « vinyl » là où l'on vend plus que de la musique",copy:"Copier le texte",clear:"Effacer",rlab:"Région",tlab:"Type",count:"{a} lieux affichés sur {b}",empty:"Aucun résultat avec ces filtres. Essayez une autre région ou un autre type.",foot:"Les liens suivent l'adresse de recherche de chaque site. Si un site change d'adresse, sa page d'accueil s'ouvre à la place. Pour les sites sans lien de recherche direct, saisissez la recherche sur le site lui-même (bouton « Copier le texte »).",needq:"Saisissez d'abord un texte de recherche.",copied:"Copié : « {q} »",selected:"Texte sélectionné. Copiez-le manuellement.",manual:"Saisissez la recherche sur le site.",go:"Chercher « {q} » ↗",open:"Ouvrir le site ↗",viewd:"Voir la description ↗",viewl:"Voir la liste ↗",sTitle:"Recherche",fTitle:"Filtres"},
+    reg:{all:"Toutes les régions",lt:"Lituanie",ww:"Monde entier",eu:"Europe",na:"États-Unis",as:"Asie et Océanie"},
+    typ:{all:"Tous les types",m:"Places de marché",p:"Boutiques",s:"Petites annonces",k:"Annuaires de magasins"},
+    tl:{m:"Place de marché",p:"Boutique",s:"Petites annonces",k:"Annuaire"},
+    dn:"Discogs : expédié depuis la Lituanie",
+    d:["Le plus grand marché du vinyle. Beaucoup de vendeurs, filtres par pays, état et prix.","Disques d'occasion et rares du monde entier, enchères et prix fixes. Catégorie vinyle déjà sélectionnée.","Disques neufs et rééditions. Vérifiez la livraison vers votre pays avant d'acheter.","Artistes et labels indépendants, souvent en éditions limitées.","Disques d'occasion et éditions de collection de petits vendeurs.","De nombreux magasins européens et collectionneurs au même endroit.","Petites annonces lituaniennes : disques d'occasion de particuliers.","Disques d'occasion de particuliers en Lituanie.","Magasin de musique lituanienne avec un rayon vinyles.","Uniquement des vendeurs expédiant depuis la Lituanie, donc pas d'attente d'un colis de l'étranger.","Magasin de disques à Vilnius. Description et contacts sur la page.","Librairie de Vilnius répertoriée dans un annuaire de magasins de disques.","Liste des magasins de disques à Vilnius.","Liste des magasins de disques à Kaunas.","Liste des magasins de disques à Klaipėda.","Électro, hip-hop et soul. Grand choix de nouveautés.","Célèbre magasin indépendant de Londres, indie et alternatif.","Musique expérimentale et électronique, nouveaux disques.","Magasin britannique : indie, rock, électro.","Magasin londonien : électro, disco, house.","Magasin berlinois de techno et de musique électronique.","Magasin allemand : classique, jazz, rock et bien d'autres genres.","Magasin allemand de disques de musique électronique.","Magasin d'Amsterdam : house, techno, disco.","Magasin américain : hip-hop, électro et platines.","Légendaire magasin californien avec beaucoup de disques d'occasion.","Magasin de Chicago : soul, jazz, musique brésilienne.","Club et magasin de vinyles américain, éditions spéciales.","Chaîne japonaise : éditions japonaises, jazz, rock.","Éditions japonaises expédiées à l'étranger.","Chaîne japonaise de disques d'occasion.","Chaîne de distribution australienne, disques neufs."]
+  };
+  X.sv={
+    ui:{lede:"Skriv in en artist eller ett album en gång. Varje butik får en färdig sökväg: tryck och se vem som säljer och till vilket pris.",qlabel:"Artist, album eller katalognummer",ph:"t.ex. Pink Floyd The Wall",exl:"Exempel",vinyl:"Lägg till ordet ”vinyl” där butiker säljer mer än musik",copy:"Kopiera text",clear:"Rensa",rlab:"Region",tlab:"Typ",count:"Visar {a} av {b} platser",empty:"Inga träffar med dessa filter. Prova en annan region eller typ.",foot:"Länkarna följer varje webbplats sökadress. Om en webbplats ändrar adress öppnas i stället dess startsida. För webbplatser utan direkt söklänk anger du sökningen på själva webbplatsen (använd knappen ”Kopiera text”).",needq:"Skriv först in en söktext.",copied:"Kopierat: ”{q}”",selected:"Texten är markerad. Kopiera den manuellt.",manual:"Ange sökningen på webbplatsen.",go:"Sök ”{q}” ↗",open:"Öppna webbplatsen ↗",viewd:"Visa beskrivning ↗",viewl:"Visa lista ↗",sTitle:"Sök",fTitle:"Filter"},
+    reg:{all:"Alla regioner",lt:"Litauen",ww:"Hela världen",eu:"Europa",na:"USA",as:"Asien och Oceanien"},
+    typ:{all:"Alla typer",m:"Marknadsplatser",p:"Butiker",s:"Annonser",k:"Butikslistor"},
+    tl:{m:"Marknadsplats",p:"Butik",s:"Annonser",k:"Lista"},
+    dn:"Discogs: skickas från Litauen",
+    d:["Största vinylmarknaden. Många säljare, filtrera efter land, skick och pris.","Begagnade och sällsynta skivor från hela världen, auktioner och fasta priser. Vinylkategorin är redan vald.","Nya skivor och nyutgåvor. Kontrollera att de skickar till ditt land innan du köper.","Oberoende artister och skivbolag, ofta limiterade upplagor.","Begagnade skivor och samlarutgåvor från små säljare.","Många europeiska butiker och samlare på ett ställe.","Litauiska annonser: begagnade skivor från privatpersoner.","Begagnade skivor från privatpersoner i Litauen.","Litauisk musikbutik med vinylavdelning.","Bara säljare som skickar från Litauen, så ingen lång väntan på paket från utlandet.","Skivbutik i Vilnius. Beskrivning och kontaktuppgifter på sidan.","Bokhandel i Vilnius som finns i en katalog över skivbutiker.","Lista över skivbutiker i Vilnius.","Lista över skivbutiker i Kaunas.","Lista över skivbutiker i Klaipėda.","Elektroniskt, hiphop och soul. Stort urval av nyheter.","Berömd oberoende butik i London, indie och alternativ.","Experimentell och elektronisk musik, nya skivor.","Brittisk butik: indie, rock, elektroniskt.","Londonbutik: elektroniskt, disco, house.","Berlinbutik för techno och elektronisk musik.","Tysk butik: klassiskt, jazz, rock och många andra genrer.","Tysk butik för skivor med elektronisk musik.","Butik i Amsterdam: house, techno, disco.","Amerikansk butik: hiphop, elektroniskt och skivspelare.","Legendarisk butik i Kalifornien med många begagnade skivor.","Butik i Chicago: soul, jazz, brasiliansk musik.","Amerikansk vinylklubb och butik, specialutgåvor.","Japansk kedja: japanska utgåvor, jazz, rock.","Japanska utgåvor som skickas utomlands.","Japansk kedja för begagnade skivor.","Australisk detaljhandelskedja, nya skivor."]
+  };
+  X.fi={
+    ui:{lede:"Kirjoita artisti tai albumi kerran. Jokaiselle kaupalle tulee valmis hakulinkki: napauta ja katso, kuka myy ja millä hinnalla.",qlabel:"Artisti, albumi tai luettelonumero",ph:"esim. Pink Floyd The Wall",exl:"Esimerkkejä",vinyl:"Lisää sana ”vinyl” sinne, missä myydään muutakin kuin musiikkia",copy:"Kopioi teksti",clear:"Tyhjennä",rlab:"Alue",tlab:"Tyyppi",count:"Näytetään {a}/{b} paikkaa",empty:"Näillä suodattimilla ei löytynyt mitään. Valitse toinen alue tai tyyppi.",foot:"Linkit perustuvat sivustojen hakuosoitteisiin. Jos sivusto muuttaa osoitettaan, avautuu sen etusivu. Sivustoilla, joilla ei ole suoraa hakulinkkiä, kirjoita haku itse sivustolle (käytä ”Kopioi teksti” -painiketta).",needq:"Kirjoita ensin hakuteksti.",copied:"Kopioitu: ”{q}”",selected:"Teksti on valittu. Kopioi se käsin.",manual:"Kirjoita haku sivustolla.",go:"Hae ”{q}” ↗",open:"Avaa sivusto ↗",viewd:"Katso kuvaus ↗",viewl:"Katso luettelo ↗",sTitle:"Haku",fTitle:"Suodattimet"},
+    reg:{all:"Kaikki alueet",lt:"Liettua",ww:"Koko maailma",eu:"Eurooppa",na:"USA",as:"Aasia ja Oseania"},
+    typ:{all:"Kaikki tyypit",m:"Markkinapaikat",p:"Kaupat",s:"Ilmoitukset",k:"Kauppaluettelot"},
+    tl:{m:"Markkinapaikka",p:"Kauppa",s:"Ilmoitukset",k:"Luettelo"},
+    dn:"Discogs: lähetys Liettuasta",
+    d:["Suurin vinyylimarkkinapaikka. Paljon myyjiä, suodata maan, kunnon ja hinnan mukaan.","Käytettyjä ja harvinaisia levyjä ympäri maailmaa, huutokauppoja ja kiinteitä hintoja. Vinyylikategoria on jo valittu.","Uusia levyjä ja uudelleenjulkaisuja. Tarkista ennen ostoa, toimitetaanko maahasi.","Riippumattomia artisteja ja levy-yhtiöitä, usein rajoitettuja painoksia.","Käytettyjä levyjä ja keräilypainoksia pieniltä myyjiltä.","Paljon eurooppalaisia kauppoja ja keräilijöitä yhdessä paikassa.","Liettualaiset ilmoitukset: käytettyjä levyjä yksityisiltä myyjiltä.","Käytettyjä levyjä yksityisiltä myyjiltä Liettuassa.","Liettualainen musiikkikauppa, jossa on vinyyliosasto.","Vain Liettuasta lähettävät myyjät, joten ei tarvitse odottaa pakettia ulkomailta.","Levykauppa Vilnassa. Kuvaus ja yhteystiedot sivulla.","Vilnalainen kirjakauppa, joka on mainittu levykauppahakemistossa.","Luettelo Vilnan levykaupoista.","Luettelo Kaunasin levykaupoista.","Luettelo Klaipėdan levykaupoista.","Elektroninen musiikki, hip-hop ja soul. Iso valikoima uutuuksia.","Kuuluisa riippumaton lontoolainen kauppa, indie ja alternative.","Kokeellista ja elektronista musiikkia, uusia levyjä.","Brittiläinen kauppa: indie, rock, elektroninen.","Lontoolainen kauppa: elektroninen, disco, house.","Berliiniläinen kauppa teknolle ja elektroniselle musiikille.","Saksalainen kauppa: klassinen, jazz, rock ja monia muita tyylilajeja.","Saksalainen elektronisen musiikin levykauppa.","Amsterdamilainen kauppa: house, techno, disco.","Yhdysvaltalainen kauppa: hip-hop, elektroninen ja levysoittimet.","Legendaarinen Kalifornian kauppa, paljon käytettyjä levyjä.","Chicagolainen kauppa: soul, jazz, brasilialainen musiikki.","Yhdysvaltalainen vinyyliklubi ja kauppa, erikoispainoksia.","Japanilainen ketju: japanilaisia painoksia, jazzia, rockia.","Japanilaisia painoksia toimitettuna ulkomaille.","Japanilainen käytettyjen levyjen ketju.","Australialainen vähittäiskauppaketju, uusia levyjä."]
+  };
+  X.es={
+    ui:{lede:"Escribe un artista o álbum una sola vez. Cada tienda tendrá un enlace de búsqueda listo: pulsa y comprueba quién vende y a qué precio.",qlabel:"Artista, álbum o número de catálogo",ph:"p. ej., Pink Floyd The Wall",exl:"Ejemplos",vinyl:"Añadir la palabra «vinyl» donde se vende algo más que música",copy:"Copiar texto",clear:"Borrar",rlab:"Región",tlab:"Tipo",count:"Mostrando {a} de {b} sitios",empty:"No hay resultados con estos filtros. Prueba otra región u otro tipo.",foot:"Los enlaces siguen la dirección de búsqueda de cada sitio. Si un sitio cambia de dirección, se abrirá su página de inicio. En los sitios sin enlace de búsqueda directo, escribe la búsqueda en el propio sitio (usa el botón «Copiar texto»).",needq:"Primero escribe un texto de búsqueda.",copied:"Copiado: «{q}»",selected:"Texto seleccionado. Cópialo manualmente.",manual:"Escribe la búsqueda en el propio sitio.",go:"Buscar «{q}» ↗",open:"Abrir sitio ↗",viewd:"Ver descripción ↗",viewl:"Ver lista ↗",sTitle:"Búsqueda",fTitle:"Filtros"},
+    reg:{all:"Todas las regiones",lt:"Lituania",ww:"Todo el mundo",eu:"Europa",na:"EE. UU.",as:"Asia y Oceanía"},
+    typ:{all:"Todos los tipos",m:"Mercados",p:"Tiendas",s:"Anuncios",k:"Directorios de tiendas"},
+    tl:{m:"Mercado",p:"Tienda",s:"Anuncios",k:"Directorio"},
+    dn:"Discogs: envío desde Lituania",
+    d:["El mayor mercado de vinilos. Muchos vendedores, filtros por país, estado y precio.","Discos usados y raros de todo el mundo, subastas y precios fijos. Categoría de vinilo ya seleccionada.","Discos nuevos y reediciones. Comprueba que envían a tu país antes de comprar.","Artistas y sellos independientes, a menudo ediciones limitadas.","Discos usados y ediciones de colección de pequeños vendedores.","Muchas tiendas europeas y coleccionistas en un solo lugar.","Anuncios lituanos: discos usados de particulares.","Discos usados de particulares en Lituania.","Tienda de música lituana con sección de vinilos.","Solo vendedores que envían desde Lituania, así que no hay que esperar un paquete del extranjero.","Tienda de discos en Vilna. Descripción y contacto en la página.","Librería de Vilna incluida en un directorio de tiendas de discos.","Lista de tiendas de discos en Vilna.","Lista de tiendas de discos en Kaunas.","Lista de tiendas de discos en Klaipėda.","Electrónica, hip-hop y soul. Gran selección de novedades.","Famosa tienda independiente de Londres, indie y alternativo.","Música experimental y electrónica, discos nuevos.","Tienda británica: indie, rock, electrónica.","Tienda de Londres: electrónica, disco, house.","Tienda de Berlín de techno y música electrónica.","Tienda alemana: clásica, jazz, rock y muchos otros géneros.","Tienda alemana de discos de música electrónica.","Tienda de Ámsterdam: house, techno, disco.","Tienda de EE. UU.: hip-hop, electrónica y tocadiscos.","Legendaria tienda de California con muchos discos usados.","Tienda de Chicago: soul, jazz, música brasileña.","Club y tienda de vinilos de EE. UU., ediciones especiales.","Cadena japonesa: ediciones japonesas, jazz, rock.","Ediciones japonesas con envío al extranjero.","Cadena japonesa de discos usados.","Cadena minorista australiana, discos nuevos."]
+  };
+  X.it={
+    ui:{lede:"Scrivi un artista o un album una sola volta. Ogni negozio avrà un link di ricerca pronto: tocca e scopri chi vende e a che prezzo.",qlabel:"Artista, album o numero di catalogo",ph:"es. Pink Floyd The Wall",exl:"Esempi",vinyl:"Aggiungi la parola «vinyl» dove si vende altro oltre alla musica",copy:"Copia testo",clear:"Cancella",rlab:"Regione",tlab:"Tipo",count:"Mostrati {a} luoghi su {b}",empty:"Nessun risultato con questi filtri. Prova un'altra regione o un altro tipo.",foot:"I link seguono l'indirizzo di ricerca di ciascun sito. Se un sito cambia indirizzo, si aprirà la sua home page. Per i siti senza link di ricerca diretto, inserisci la ricerca sul sito stesso (usa il pulsante «Copia testo»).",needq:"Prima scrivi un testo di ricerca.",copied:"Copiato: «{q}»",selected:"Testo selezionato. Copialo manualmente.",manual:"Inserisci la ricerca sul sito.",go:"Cerca «{q}» ↗",open:"Apri il sito ↗",viewd:"Vedi descrizione ↗",viewl:"Vedi elenco ↗",sTitle:"Ricerca",fTitle:"Filtri"},
+    reg:{all:"Tutte le regioni",lt:"Lituania",ww:"Tutto il mondo",eu:"Europa",na:"USA",as:"Asia e Oceania"},
+    typ:{all:"Tutti i tipi",m:"Marketplace",p:"Negozi",s:"Annunci",k:"Elenchi di negozi"},
+    tl:{m:"Marketplace",p:"Negozio",s:"Annunci",k:"Elenco"},
+    dn:"Discogs: spedizione dalla Lituania",
+    d:["Il più grande mercato del vinile. Molti venditori, filtri per paese, condizione e prezzo.","Dischi usati e rari da tutto il mondo, aste e prezzi fissi. Categoria vinile già selezionata.","Dischi nuovi e ristampe. Prima di acquistare controlla che spediscano nel tuo paese.","Artisti ed etichette indipendenti, spesso edizioni limitate.","Dischi usati ed edizioni da collezione di piccoli venditori.","Molti negozi europei e collezionisti in un unico posto.","Annunci lituani: dischi usati di privati.","Dischi usati di privati in Lituania.","Negozio di musica lituana con reparto vinili.","Solo venditori che spediscono dalla Lituania, quindi niente lunga attesa per i pacchi dall'estero.","Negozio di dischi a Vilnius. Descrizione e contatti nella pagina.","Libreria di Vilnius inserita in un elenco di negozi di dischi.","Elenco dei negozi di dischi a Vilnius.","Elenco dei negozi di dischi a Kaunas.","Elenco dei negozi di dischi a Klaipėda.","Elettronica, hip-hop e soul. Ampia scelta di novità.","Famoso negozio indipendente di Londra, indie e alternativa.","Musica sperimentale ed elettronica, dischi nuovi.","Negozio britannico: indie, rock, elettronica.","Negozio londinese: elettronica, disco, house.","Negozio berlinese di techno e musica elettronica.","Negozio tedesco: classica, jazz, rock e molti altri generi.","Negozio tedesco di dischi di musica elettronica.","Negozio di Amsterdam: house, techno, disco.","Negozio statunitense: hip-hop, elettronica e giradischi.","Leggendario negozio californiano con molti dischi usati.","Negozio di Chicago: soul, jazz, musica brasiliana.","Club e negozio di vinili statunitense, edizioni speciali.","Catena giapponese: edizioni giapponesi, jazz, rock.","Edizioni giapponesi con spedizione all'estero.","Catena giapponese di dischi usati.","Catena di vendita australiana, dischi nuovi."]
+  };
+  X.nl={
+    ui:{lede:"Typ één keer een artiest of album. Elke winkel krijgt een kant-en-klare zoeklink: tik erop en zie wie het verkoopt en tegen welke prijs.",qlabel:"Artiest, album of catalogusnummer",ph:"bijv. Pink Floyd The Wall",exl:"Voorbeelden",vinyl:"Voeg het woord ‘vinyl’ toe waar meer dan muziek wordt verkocht",copy:"Tekst kopiëren",clear:"Wissen",rlab:"Regio",tlab:"Type",count:"{a} van {b} plaatsen getoond",empty:"Niets gevonden met deze filters. Probeer een andere regio of een ander type.",foot:"De links volgen het zoekadres van elke site. Verandert een site van adres, dan opent de startpagina. Voer bij sites zonder directe zoeklink de zoekopdracht op de site zelf in (gebruik de knop ‘Tekst kopiëren’).",needq:"Typ eerst een zoektekst.",copied:"Gekopieerd: ‘{q}’",selected:"Tekst geselecteerd. Kopieer hem handmatig.",manual:"Voer de zoekopdracht op de site in.",go:"Zoek ‘{q}’ ↗",open:"Site openen ↗",viewd:"Beschrijving bekijken ↗",viewl:"Lijst bekijken ↗",sTitle:"Zoeken",fTitle:"Filters"},
+    reg:{all:"Alle regio's",lt:"Litouwen",ww:"Wereldwijd",eu:"Europa",na:"VS",as:"Azië en Oceanië"},
+    typ:{all:"Alle typen",m:"Marktplaatsen",p:"Winkels",s:"Advertenties",k:"Winkelgidsen"},
+    tl:{m:"Marktplaats",p:"Winkel",s:"Advertenties",k:"Gids"},
+    dn:"Discogs: verzending vanuit Litouwen",
+    d:["De grootste vinylmarktplaats. Veel verkopers, filter op land, staat en prijs.","Tweedehands en zeldzame platen van over de hele wereld, veilingen en vaste prijzen. Vinylcategorie al gekozen.","Nieuwe platen en heruitgaven. Controleer vóór aankoop of ze naar jouw land verzenden.","Onafhankelijke artiesten en labels, vaak beperkte oplagen.","Tweedehands platen en verzamelaarsedities van kleine verkopers.","Veel Europese winkels en verzamelaars op één plek.","Litouwse advertenties: tweedehands platen van particulieren.","Tweedehands platen van particulieren in Litouwen.","Litouwse muziekwinkel met vinylafdeling.","Alleen verkopers die vanuit Litouwen verzenden, dus geen lange wachttijd op pakketten uit het buitenland.","Platenwinkel in Vilnius. Beschrijving en contactgegevens op de pagina.","Boekhandel in Vilnius, opgenomen in een gids van platenwinkels.","Lijst van platenwinkels in Vilnius.","Lijst van platenwinkels in Kaunas.","Lijst van platenwinkels in Klaipėda.","Elektronisch, hiphop en soul. Groot aanbod nieuwe releases.","Beroemde onafhankelijke winkel in Londen, indie en alternatief.","Experimentele en elektronische muziek, nieuwe platen.","Britse winkel: indie, rock, elektronisch.","Winkel in Londen: elektronisch, disco, house.","Berlijnse winkel voor techno en elektronische muziek.","Duitse winkel: klassiek, jazz, rock en vele andere genres.","Duitse winkel voor platen met elektronische muziek.","Winkel in Amsterdam: house, techno, disco.","Amerikaanse winkel: hiphop, elektronisch en platenspelers.","Legendarische winkel in Californië met veel tweedehands platen.","Winkel in Chicago: soul, jazz, Braziliaanse muziek.","Amerikaanse vinylclub en winkel, speciale edities.","Japanse keten: Japanse edities, jazz, rock.","Japanse edities met verzending naar het buitenland.","Japanse keten voor tweedehands platen.","Australische winkelketen, nieuwe platen."]
+  };
+  X.da={
+    ui:{lede:"Skriv en kunstner eller et album én gang. Hver butik får et færdigt søgelink: tryk og se, hvem der sælger og til hvilken pris.",qlabel:"Kunstner, album eller katalognummer",ph:"fx Pink Floyd The Wall",exl:"Eksempler",vinyl:"Tilføj ordet »vinyl« hvor der sælges andet end musik",copy:"Kopiér tekst",clear:"Ryd",rlab:"Region",tlab:"Type",count:"Viser {a} af {b} steder",empty:"Ingen resultater med disse filtre. Prøv en anden region eller type.",foot:"Linkene følger hver hjemmesides søgeadresse. Ændrer en hjemmeside adresse, åbnes dens forside i stedet. På hjemmesider uden direkte søgelink skal du skrive søgningen på selve hjemmesiden (brug knappen »Kopiér tekst«).",needq:"Skriv først en søgetekst.",copied:"Kopieret: »{q}«",selected:"Teksten er markeret. Kopiér den manuelt.",manual:"Skriv søgningen på hjemmesiden.",go:"Søg »{q}« ↗",open:"Åbn hjemmesiden ↗",viewd:"Se beskrivelse ↗",viewl:"Se oversigt ↗",sTitle:"Søgning",fTitle:"Filtre"},
+    reg:{all:"Alle regioner",lt:"Litauen",ww:"Hele verden",eu:"Europa",na:"USA",as:"Asien og Oceanien"},
+    typ:{all:"Alle typer",m:"Markedspladser",p:"Butikker",s:"Annoncer",k:"Butiksoversigter"},
+    tl:{m:"Markedsplads",p:"Butik",s:"Annoncer",k:"Oversigt"},
+    dn:"Discogs: sendes fra Litauen",
+    d:["Den største vinylmarkedsplads. Mange sælgere, filtrer efter land, stand og pris.","Brugte og sjældne plader fra hele verden, auktioner og faste priser. Vinylkategorien er allerede valgt.","Nye plader og genudgivelser. Tjek at de sender til dit land, før du køber.","Uafhængige kunstnere og pladeselskaber, ofte limiterede oplag.","Brugte plader og samlerudgaver fra små sælgere.","Mange europæiske butikker og samlere samlet ét sted.","Litauiske annoncer: brugte plader fra private.","Brugte plader fra private i Litauen.","Litauisk musikbutik med vinylafdeling.","Kun sælgere, der sender fra Litauen, så du slipper for lang ventetid på pakker fra udlandet.","Pladebutik i Vilnius. Beskrivelse og kontaktoplysninger på siden.","Boghandel i Vilnius, som står i en oversigt over pladebutikker.","Oversigt over pladebutikker i Vilnius.","Oversigt over pladebutikker i Kaunas.","Oversigt over pladebutikker i Klaipėda.","Elektronisk, hiphop og soul. Stort udvalg af nyheder.","Berømt uafhængig butik i London, indie og alternativ.","Eksperimentel og elektronisk musik, nye plader.","Britisk butik: indie, rock, elektronisk.","Butik i London: elektronisk, disco, house.","Butik i Berlin for techno og elektronisk musik.","Tysk butik: klassisk, jazz, rock og mange andre genrer.","Tysk butik for plader med elektronisk musik.","Butik i Amsterdam: house, techno, disco.","Amerikansk butik: hiphop, elektronisk og pladespillere.","Legendarisk butik i Californien med mange brugte plader.","Butik i Chicago: soul, jazz, brasiliansk musik.","Amerikansk vinylklub og butik, specialudgaver.","Japansk kæde: japanske udgaver, jazz, rock.","Japanske udgaver med forsendelse til udlandet.","Japansk kæde med brugte plader.","Australsk detailkæde, nye plader."]
+  };
+  X.no={
+    ui:{lede:"Skriv inn en artist eller et album én gang. Hver butikk får en ferdig søkelenke: trykk og se hvem som selger og til hvilken pris.",qlabel:"Artist, album eller katalognummer",ph:"f.eks. Pink Floyd The Wall",exl:"Eksempler",vinyl:"Legg til ordet «vinyl» der det selges mer enn musikk",copy:"Kopier tekst",clear:"Tøm",rlab:"Region",tlab:"Type",count:"Viser {a} av {b} steder",empty:"Ingen treff med disse filtrene. Prøv en annen region eller type.",foot:"Lenkene følger hvert nettsteds søkeadresse. Hvis et nettsted endrer adresse, åpnes startsiden i stedet. På nettsteder uten direkte søkelenke skriver du søket på selve nettstedet (bruk knappen «Kopier tekst»).",needq:"Skriv først inn en søketekst.",copied:"Kopiert: «{q}»",selected:"Teksten er markert. Kopier den manuelt.",manual:"Skriv søket på nettstedet.",go:"Søk «{q}» ↗",open:"Åpne nettstedet ↗",viewd:"Se beskrivelse ↗",viewl:"Se oversikt ↗",sTitle:"Søk",fTitle:"Filtre"},
+    reg:{all:"Alle regioner",lt:"Litauen",ww:"Hele verden",eu:"Europa",na:"USA",as:"Asia og Oseania"},
+    typ:{all:"Alle typer",m:"Markedsplasser",p:"Butikker",s:"Annonser",k:"Butikkoversikter"},
+    tl:{m:"Markedsplass",p:"Butikk",s:"Annonser",k:"Oversikt"},
+    dn:"Discogs: sendes fra Litauen",
+    d:["Den største vinylmarkedsplassen. Mange selgere, filtrer etter land, stand og pris.","Brukte og sjeldne plater fra hele verden, auksjoner og faste priser. Vinylkategorien er allerede valgt.","Nye plater og nyutgivelser. Sjekk at de sender til landet ditt før du kjøper.","Uavhengige artister og plateselskaper, ofte begrensede opplag.","Brukte plater og samlerutgaver fra små selgere.","Mange europeiske butikker og samlere på ett sted.","Litauiske annonser: brukte plater fra privatpersoner.","Brukte plater fra privatpersoner i Litauen.","Litauisk musikkbutikk med vinylavdeling.","Bare selgere som sender fra Litauen, så du slipper lang ventetid på pakker fra utlandet.","Platebutikk i Vilnius. Beskrivelse og kontaktinformasjon på siden.","Bokhandel i Vilnius som står i en oversikt over platebutikker.","Oversikt over platebutikker i Vilnius.","Oversikt over platebutikker i Kaunas.","Oversikt over platebutikker i Klaipėda.","Elektronisk, hiphop og soul. Stort utvalg av nyheter.","Berømt uavhengig butikk i London, indie og alternativ.","Eksperimentell og elektronisk musikk, nye plater.","Britisk butikk: indie, rock, elektronisk.","Butikk i London: elektronisk, disco, house.","Butikk i Berlin for techno og elektronisk musikk.","Tysk butikk: klassisk, jazz, rock og mange andre sjangre.","Tysk butikk for plater med elektronisk musikk.","Butikk i Amsterdam: house, techno, disco.","Amerikansk butikk: hiphop, elektronisk og platespillere.","Legendarisk butikk i California med mange brukte plater.","Butikk i Chicago: soul, jazz, brasiliansk musikk.","Amerikansk vinylklubb og butikk, spesialutgaver.","Japansk kjede: japanske utgaver, jazz, rock.","Japanske utgaver med frakt til utlandet.","Japansk kjede for brukte plater.","Australsk detaljkjede, nye plater."]
+  };
+  S.forEach(function(s,i){s.i=i;});
+
+  var state={q:"Pink Floyd The Wall",vinyl:true,region:"all",type:"all",li:0};
+  /* Kalba pagal naršyklės kalbų sąrašą; jei tokios kalbos nėra, anglų */
+  function detectLang(){
+    var list=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||"en"];
+    for(var i=0;i<list.length;i++){
+      var c=String(list[i]).slice(0,2).toLowerCase();
+      if(c==="nb"||c==="nn")c="no";
+      if(LG.indexOf(c)>-1)return LG.indexOf(c);
+    }
+    return LG.indexOf("en");
+  }
+  state.li=detectLang();
+  try{
+    var saved=localStorage.getItem("vm-q");if(saved!==null)state.q=saved;
+    var sl=localStorage.getItem("vm-lang");
+    if(sl&&LG.indexOf(sl)>-1)state.li=LG.indexOf(sl);
+  }catch(e){}
+
+  var $q=document.getElementById("q"),$vinyl=document.getElementById("vinyl"),
+      $list=document.getElementById("list"),$count=document.getElementById("count"),
+      $msg=document.getElementById("msg"),$regions=document.getElementById("regions"),
+      $types=document.getElementById("types"),$langs=document.getElementById("langs");
+  var links=[];
+
+  function xr(){return X[LG[state.li]];}
+  function t(k){return state.li<NATIVE?U[k][state.li]:xr().ui[k];}
+  function pick(group,id,arr){return state.li<NATIVE?arr[state.li]:xr()[group][id];}
+  function nameOf(s){if(typeof s.n==="string")return s.n;return state.li<NATIVE?s.n[state.li]:xr().dn;}
+  function descOf(s){return state.li<NATIVE?s.d[state.li]:xr().d[s.i];}
+  function slug(x){
+    return x.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+  }
+  function buildUrl(s){
+    var q=state.q.trim();
+    if(!q||!s.s)return s.u;
+    var full=q;
+    if(state.vinyl&&s.v)full+=" "+s.v;
+    return s.s.replace("{q}",encodeURIComponent(full)).replace("{s}",slug(full));
+  }
+  function label(s){
+    var q=state.q.trim();
+    if(s.s&&q)return t("go").replace("{q}",q);
+    if(s.a==="d")return t("viewd");
+    if(s.a==="l")return t("viewl");
+    return t("open");
+  }
+  function refresh(){
+    links.forEach(function(l){
+      l.a.href=buildUrl(l.s);
+      l.a.textContent=label(l.s);
+      l.a.title=l.a.textContent;
+    });
+  }
+  function chips(host,items,key){
+    host.textContent="";
+    items.forEach(function(it){
+      var b=document.createElement("button");
+      b.type="button";b.className="chip";b.textContent=pick(key==="region"?"reg":"typ",it[0],it[1]);
+      b.setAttribute("aria-pressed",String(state[key]===it[0]));
+      b.addEventListener("click",function(){state[key]=it[0];chips(host,items,key);render();});
+      host.appendChild(b);
+    });
+  }
+  function regionName(code){
+    for(var i=0;i<REG.length;i++)if(REG[i][0]===code)return REG[i][1][state.li];
+    return code;
+  }
+  function render(){
+    $list.textContent="";links=[];
+    var shown=0;
+    REG.forEach(function(r){
+      if(state.region!=="all"&&state.region!==r[0])return;
+      var items=S.filter(function(s){return s.r===r[0]&&(state.type==="all"||s.t===state.type);});
+      if(!items.length)return;
+      shown+=items.length;
+      var sec=document.createElement("section");sec.className="sec";
+      var h=document.createElement("h2");h.textContent=pick("reg",r[0],r[1]);
+      var cnt=document.createElement("span");cnt.textContent=items.length;h.appendChild(cnt);
+      sec.appendChild(h);
+      var g=document.createElement("div");g.className="grid";
+      items.forEach(function(s){
+        var c=document.createElement("article");c.className="card";
+        var top=document.createElement("div");top.className="top";
+        var n=document.createElement("h3");n.textContent=nameOf(s);
+        var cc=document.createElement("span");cc.className="cc";cc.textContent=s.c;
+        top.appendChild(n);top.appendChild(cc);
+        var tag=document.createElement("span");tag.className="tag";tag.textContent=pick("tl",s.t,TL[s.t]);
+        var p=document.createElement("p");p.className="note";
+        p.textContent=descOf(s)+(s.m?" "+t("manual"):"");
+        var a=document.createElement("a");a.className="go";a.target="_blank";a.rel="noopener noreferrer";
+        c.appendChild(top);c.appendChild(tag);c.appendChild(p);c.appendChild(a);
+        g.appendChild(c);
+        links.push({a:a,s:s});
+      });
+      sec.appendChild(g);
+      $list.appendChild(sec);
+    });
+    if(!shown){
+      var e=document.createElement("div");e.className="empty";
+      e.textContent=t("empty");
+      $list.appendChild(e);
+    }
+    $count.textContent=t("count").replace("{a}",shown).replace("{b}",S.length);
+    refresh();
+  }
+  function applyText(){
+    document.documentElement.setAttribute("lang",LG[state.li]);
+    Array.prototype.forEach.call(document.querySelectorAll("[data-i]"),function(el){
+      el.textContent=t(el.getAttribute("data-i"));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-p]"),function(el){
+      el.setAttribute("placeholder",t(el.getAttribute("data-p")));
+    });
+    document.getElementById("panel").setAttribute("aria-label",t("sTitle"));
+    document.getElementById("filters").setAttribute("aria-label",t("fTitle"));
+    chips($regions,[["all",U.allr]].concat(REG),"region");
+    chips($types,TYP,"type");
+    langButtons();
+    render();
+  }
+  function langButtons(){
+    $langs.textContent="";
+    ORDER.forEach(function(code){
+      var i=LG.indexOf(code);
+      var b=document.createElement("button");
+      b.type="button";b.className="mini";b.textContent=LN[i];b.title=LNAME[i];
+      b.setAttribute("lang",code);
+      b.setAttribute("aria-pressed",String(i===state.li));
+      b.addEventListener("click",function(){
+        state.li=i;$msg.textContent="";
+        try{localStorage.setItem("vm-lang",code);}catch(e){}
+        applyText();
+      });
+      $langs.appendChild(b);
+    });
+  }
+  function setQ(v){
+    state.q=v;$q.value=v;
+    try{localStorage.setItem("vm-q",v);}catch(e){}
+    refresh();
+  }
+
+  $q.value=state.q;
+  $q.addEventListener("input",function(){setQ($q.value);$msg.textContent="";});
+  $vinyl.addEventListener("change",function(){state.vinyl=$vinyl.checked;refresh();});
+  Array.prototype.forEach.call(document.querySelectorAll(".ex"),function(b){
+    b.addEventListener("click",function(){setQ(b.textContent);$msg.textContent="";});
+  });
+  document.getElementById("clear").addEventListener("click",function(){setQ("");$q.focus();$msg.textContent="";});
+  document.getElementById("copy").addEventListener("click",function(){
+    var x=state.q.trim();
+    if(!x){$msg.textContent=t("needq");return;}
+    function fallback(){$q.focus();$q.select();$msg.textContent=t("selected");}
+    try{
+      navigator.clipboard.writeText(x).then(function(){$msg.textContent=t("copied").replace("{q}",x);},fallback);
+    }catch(e){fallback();}
+  });
+
+  applyText();
+})();
+</script>
+
+</body>
+</html>
