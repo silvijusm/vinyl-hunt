@@ -159,6 +159,7 @@ h1{
   <main id="list" class="wrap" style="gap:32px"></main>
 
   <p class="foot" data-i="foot"></p>
+  <p class="foot" id="aff" hidden></p>
 </div>
 
 <script>
@@ -464,12 +465,31 @@ h1{
   function slug(x){
     return x.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
   }
+  /* Partnerių (affiliate) ID. Kol laukai tušti, nuorodos lieka įprastos ir pastaba apie reklamines nuorodas nerodoma.
+     eBay: Partner Network "campid". Amazon: kiekvienos šalies svetainei atskiras "tag" (pvz., "vardas-21"). */
+  var AFF={ebay:"",amazon:{"amazon.com":"","amazon.de":"","amazon.fr":"","amazon.es":"","amazon.it":"","amazon.pl":"","amazon.se":"","amazon.nl":""}};
+  var AFFTXT=["Kai kurios nuorodos yra reklaminės (partnerių): jei per jas ką nors nusipirksite, galiu gauti nedidelį atlygį. Jums kaina nesikeičia.","Some links are affiliate links: if you buy through them I may earn a small commission, at no extra cost to you.","Einige Links sind Affiliate-Links: Wenn Sie darüber kaufen, erhalte ich möglicherweise eine kleine Provision, ohne Mehrkosten für Sie.","Niektóre linki są linkami partnerskimi: jeśli kupisz przez nie, mogę otrzymać niewielką prowizję, bez dodatkowych kosztów dla Ciebie.","Dažas saites ir partneru saites: ja pirksiet caur tām, es varu saņemt nelielu komisiju, jums papildu izmaksu nav.","Mõned lingid on partnerlingid: kui ostate nende kaudu, võin saada väikese vahendustasu, teile lisakulu ei teki.","Некоторые ссылки партнёрские: если вы купите по ним, я могу получить небольшую комиссию, для вас цена не меняется.","Certains liens sont des liens d'affiliation : si vous achetez via ceux-ci, je peux toucher une petite commission, sans frais supplémentaires pour vous.","Vissa länkar är affiliatelänkar: om du köper via dem kan jag få en liten provision, utan extra kostnad för dig.","Jotkin linkit ovat kumppanilinkkejä: jos ostat niiden kautta, saatan saada pienen palkkion ilman lisäkustannuksia sinulle.","Algunos enlaces son de afiliado: si compras a través de ellos, puedo recibir una pequeña comisión, sin coste adicional para ti.","Alcuni link sono di affiliazione: se acquisti tramite essi, potrei ricevere una piccola commissione, senza costi aggiuntivi per te.","Sommige links zijn affiliatelinks: als je erdoor koopt, kan ik een kleine commissie ontvangen, zonder extra kosten voor jou.","Nogle links er affiliatelinks: hvis du køber via dem, kan jeg få en lille provision, uden ekstra omkostninger for dig.","Noen lenker er affiliatelenker: hvis du kjøper via dem, kan jeg få en liten provisjon, uten ekstra kostnad for deg."];
+  function anyAff(){
+    if(AFF.ebay)return true;
+    for(var k in AFF.amazon)if(AFF.amazon[k])return true;
+    return false;
+  }
+  function aff(url){
+    var m=url.match(/^https?:\/\/([^\/]+)/);
+    if(!m)return url;
+    var host=m[1].replace(/^www\./,"");
+    var add="";
+    if(host==="ebay.com"&&AFF.ebay)add="mkcid=1&mkrid=711-53200-19255-0&siteid=0&campid="+encodeURIComponent(AFF.ebay)+"&toolid=10001&mkevt=1";
+    else if(AFF.amazon[host])add="tag="+encodeURIComponent(AFF.amazon[host]);
+    if(!add)return url;
+    return url+(url.indexOf("?")>-1?"&":"?")+add;
+  }
   function buildUrl(s){
     var q=state.q.trim();
-    if(!q||!s.s)return s.u;
+    if(!q||!s.s)return aff(s.u);
     var full=q;
     if(state.vinyl&&s.v)full+=" "+s.v;
-    return s.s.replace("{q}",encodeURIComponent(full)).replace("{s}",slug(full));
+    return aff(s.s.replace("{q}",encodeURIComponent(full)).replace("{s}",slug(full)));
   }
   function label(s){
     var q=state.q.trim();
@@ -547,6 +567,9 @@ h1{
     });
     document.getElementById("panel").setAttribute("aria-label",t("sTitle"));
     document.getElementById("filters").setAttribute("aria-label",t("fTitle"));
+    var affEl=document.getElementById("aff");
+    affEl.textContent=AFFTXT[state.li];
+    affEl.hidden=!anyAff();
     chips($regions,[["all",U.allr]].concat(REG),"region");
     chips($types,TYP,"type");
     langButtons();
